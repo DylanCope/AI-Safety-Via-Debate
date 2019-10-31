@@ -21,7 +21,8 @@ class MCTS:
     def choose(self, node):
         "Choose the best successor of node. (Choose a move in the game)"
         if node.is_terminal():
-            raise RuntimeError("choose called on terminal node {node}".format(node=node))
+            raise RuntimeError(
+                "choose called on terminal node {node}".format(node=node))
 
         if node not in self.children:
             return node.find_random_child()
@@ -54,7 +55,7 @@ class MCTS:
                 n = unexplored.pop()
                 path.append(n)
                 return path
-            node = self._select(node)  # descend a layer deeper
+            node = self._select_decendent(node)  # descend a layer deeper
 
     def _expand(self, node):
         "Update the `children` dict with the children of `node`"
@@ -64,13 +65,10 @@ class MCTS:
 
     def _simulate(self, node):
         "Returns the reward for a random simulation (to completion) of `node`"
-        invert_reward = True
         while True:
             if node.is_terminal():
-                reward = node.reward()
-                return 1 - reward if invert_reward else reward
+                return node.reward()
             node = node.find_random_child()
-            invert_reward = not invert_reward
 
     def _backpropagate(self, path, reward):
         "Send the reward back up to the ancestors of the leaf"
@@ -79,7 +77,7 @@ class MCTS:
             self.Q[node] += reward
             reward = 1 - reward  # 1 for me is 0 for my enemy, and vice versa
 
-    def _select(self, node):
+    def _select_decendent(self, node):
         "Select a child of node, balancing exploration & exploitation"
 
         # All children of node should already be expanded:
